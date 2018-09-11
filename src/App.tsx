@@ -1,7 +1,6 @@
 import * as React from 'react';
 import './App.css';
 
-import logo from './logo.svg';
 import { INJECT_KEY } from './constants';
 import { KategloClass } from './services/KategloService';
 import { inject, observer } from 'mobx-react';
@@ -84,7 +83,7 @@ class App extends React.Component<Props, State> {
           </button>
         </div>
         <div>
-          {this.state.responses!.length}
+          Total Kata: {this.state.responses!.length}
         </div>
         {this.state.responses!.length > 0 ?
           this.state.responses!.reverse().map((value, index) => <WordTree key={index} word={value} />)
