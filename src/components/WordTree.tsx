@@ -20,10 +20,10 @@ export class WordTree extends React.Component<Props> {
         }
       >
         <div>
-          Kata: {this.props.word.kateglo.phrase}
+          Kata: {this.props.word.kateglo ? this.props.word.kateglo.phrase : 'Tidak Ditemukan'}
         </div>
         <div>
-          Kategori: {this.props.word.kateglo.lex_class_name}
+          Kategori: {this.props.word.kateglo ? this.props.word.kateglo.lex_class_name : 'Tidak Ditemukan'}
         </div>
       </div>
     );
