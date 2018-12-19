@@ -1,7 +1,8 @@
 import { SYMBOLS } from 'src/constants/SYMBOLS';
 import { INFIX } from 'src/constants/INFIX';
 import { PREFIX, ALLOMORPH_RULES } from 'src/constants/PREFIX';
-import { SUFFIX } from 'src/constants/SUFFIX';
+import { SUFFIX, SUFFIX_SOURCE } from 'src/constants/SUFFIX';
+const removeSuffix = require('remove-suffix');
 
 interface Response {
   infix?: string;
@@ -16,9 +17,9 @@ class WordHelperClass {
   }
 
   removePrefix = (word: string): Response => {
-    let result = word;
-    const matches = word.match(PREFIX);
+    let result: string = word;
     if (word.startsWith(PREFIX.source)) {
+      const matches: string[] = word.match(PREFIX)!;
       result = word.slice(matches![0].length);
       ALLOMORPH_RULES.forEach((rule) => {
         if (result.startsWith(rule.match)) {
@@ -33,9 +34,13 @@ class WordHelperClass {
   }
 
   removeSuffix = (word: string): Response => {
+    let result: string = word;
+    if (SUFFIX.test(word)) {
+      result = removeSuffix(word, SUFFIX_SOURCE)[0];
+    }
     return {
-      suffix: word,
-      word
+      suffix: removeSuffix(word, SUFFIX_SOURCE)[1],
+      word: result
     };
   }
 

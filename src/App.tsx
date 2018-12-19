@@ -33,22 +33,52 @@ class App extends React.Component<Props, State> {
     };
   }
 
-  fetchWord = (word: string) => {
+  collectData = (word: string) => {
     this.props[INJECT_KEY.KATEGLO]!.fetchWord(word)
       .then(response => {
-        if (response.data) {
+        if (response.data.kateglo) {
           const data = { ...response.data, origin: word };
           this.state.responses!.push(data);
           this.setState({ responses: this.state.responses!.reverse() });
+        } else {
+          const wordWithoutPrefix = WordHelper.removePrefix(word).word;
+          this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutPrefix)
+            .then(responsePrefix => {
+              if (responsePrefix.data.kateglo) {
+                const data = { ...responsePrefix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix };
+                this.state.responses!.push(data);
+                this.setState({ responses: this.state.responses!.reverse() });
+              } else {
+                const wordWithoutSuffix = WordHelper.removeSuffix(word).word;
+                this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutSuffix)
+                  .then(responseSuffix => {
+                    if (responseSuffix.data.kateglo) {
+                      const data = { ...responseSuffix.data, origin: word, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix };
+                      this.state.responses!.push(data);
+                      this.setState({ responses: this.state.responses!.reverse() });
+                    } else {
+                      const wordWithoutInfix = WordHelper.removeInfix(wordWithoutSuffix).word;
+                      this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutInfix)
+                        .then(responseInfix => {
+                          if (responseInfix.data.kateglo) {
+                            const data = { ...responseInfix.data, origin: word, infix: WordHelper.removeInfix(wordWithoutInfix) };
+                            this.state.responses!.push(data);
+                            this.setState({ responses: this.state.responses!.reverse() });
+                          }
+                        });
+                    }
+                  });
+
+              }
+            });
         }
-      })
-      .catch(error => alert(error));
+      });
   }
 
   process = (words: string[]) => {
     this.setState({ responses: [] });
     words!.map((value) => {
-      this.fetchWord(value);
+      this.collectData(value);
     });
   }
 
