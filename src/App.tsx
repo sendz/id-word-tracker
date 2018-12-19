@@ -49,11 +49,11 @@ class App extends React.Component<Props, State> {
                 this.state.responses!.push(data);
                 this.setState({ responses: this.state.responses!.reverse() });
               } else {
-                const wordWithoutSuffix = WordHelper.removeSuffix(word).word;
+                const wordWithoutSuffix = WordHelper.removeSuffix(wordWithoutPrefix).word;
                 this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutSuffix)
                   .then(responseSuffix => {
                     if (responseSuffix.data.kateglo) {
-                      const data = { ...responseSuffix.data, origin: word, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix };
+                      const data = { ...responseSuffix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix };
                       this.state.responses!.push(data);
                       this.setState({ responses: this.state.responses!.reverse() });
                     } else {
@@ -61,7 +61,7 @@ class App extends React.Component<Props, State> {
                       this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutInfix)
                         .then(responseInfix => {
                           if (responseInfix.data.kateglo) {
-                            const data = { ...responseInfix.data, origin: word, infix: WordHelper.removeInfix(wordWithoutInfix) };
+                            const data = { ...responseInfix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix, infix: WordHelper.removeInfix(wordWithoutInfix) };
                             this.state.responses!.push(data);
                             this.setState({ responses: this.state.responses!.reverse() });
                           }

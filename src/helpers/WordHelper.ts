@@ -18,17 +18,17 @@ class WordHelperClass {
 
   removePrefix = (word: string): Response => {
     let result: string = word;
-    if (word.startsWith(PREFIX.source)) {
+    if (PREFIX.test(word)) {
       const matches: string[] = word.match(PREFIX)!;
       result = word.slice(matches![0].length);
       ALLOMORPH_RULES.forEach((rule) => {
         if (result.startsWith(rule.match)) {
-          result = `${rule.replace}${word.slice(rule.match.length)}`;
+          result = `${rule.replace}${result.slice(rule.match.length)}`;
         }
       });
     }
     return {
-      prefix: word,
+      prefix: word.match(PREFIX)![0],
       word: result
     };
   }
