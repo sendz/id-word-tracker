@@ -16,6 +16,7 @@ interface State {
   phrase?: string;
   words?: string[];
   responses?: KategloResponse[];
+  isPaused?: boolean;
 }
 
 @observer
@@ -29,17 +30,20 @@ class App extends React.Component<Props, State> {
     this.state = {
       phrase: '',
       words: [],
-      responses: []
+      responses: [],
+      isPaused: false,
     };
   }
 
   collectData = (word: string) => {
+    this.setState({ ...this.state, isPaused: true });
     this.props[INJECT_KEY.KATEGLO]!.fetchWord(word)
       .then(response => {
         if (response.data.kateglo) {
           const data = { ...response.data, origin: word };
           this.state.responses!.push(data);
           this.setState({ responses: this.state.responses!.reverse() });
+          this.setState({ ...this.state, isPaused: false });
         } else {
           const wordWithoutPrefix = WordHelper.removePrefix(word).word;
           this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutPrefix)
@@ -48,6 +52,7 @@ class App extends React.Component<Props, State> {
                 const data = { ...responsePrefix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix };
                 this.state.responses!.push(data);
                 this.setState({ responses: this.state.responses!.reverse() });
+                this.setState({ ...this.state, isPaused: false });
               } else {
                 const wordWithoutSuffix = WordHelper.removeSuffix(wordWithoutPrefix).word;
                 this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutSuffix)
@@ -56,15 +61,35 @@ class App extends React.Component<Props, State> {
                       const data = { ...responseSuffix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix };
                       this.state.responses!.push(data);
                       this.setState({ responses: this.state.responses!.reverse() });
+                      this.setState({ ...this.state, isPaused: false });
+
                     } else {
                       const wordWithoutInfix = WordHelper.removeInfix(wordWithoutSuffix).word;
                       this.props[INJECT_KEY.KATEGLO]!.fetchWord(wordWithoutInfix)
                         .then(responseInfix => {
                           if (responseInfix.data.kateglo) {
-                            const data = { ...responseInfix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix, infix: WordHelper.removeInfix(wordWithoutInfix) };
+                            const data = { ...responseInfix.data, origin: word, prefix: WordHelper.removePrefix(word).prefix, suffix: WordHelper.removeSuffix(wordWithoutPrefix).suffix, infix: WordHelper.removeInfix(wordWithoutInfix).infix };
                             this.state.responses!.push(data);
                             this.setState({ responses: this.state.responses!.reverse() });
+                            this.setState({ ...this.state, isPaused: false });
+                          } else {
+                            const data = {
+                              warning: 'Not Found',
+                              origin: word
+                            };
+                            this.state.responses!.push(data);
+                            this.setState({ responses: this.state.responses!.reverse() });
+                            this.setState({ ...this.state, isPaused: false });
                           }
+                        })
+                        .catch(() => {
+                          const data = {
+                            warning: 'Not Found',
+                            origin: word
+                          };
+                          this.state.responses!.push(data);
+                          this.setState({ responses: this.state.responses!.reverse() });
+                          this.setState({ ...this.state, isPaused: false });
                         });
                     }
                   });
@@ -75,10 +100,16 @@ class App extends React.Component<Props, State> {
       });
   }
 
-  process = (words: string[]) => {
+  process = () => {
     this.setState({ responses: [] });
-    words!.map((value) => {
-      this.collectData(value);
+    this.state.words!.map((value) => {
+      if (this.state.isPaused) {
+        setTimeout(() => {
+          // waiting
+        },         100);
+      } else {
+        this.collectData(value);
+      }
     });
   }
 
@@ -106,7 +137,7 @@ class App extends React.Component<Props, State> {
             value={this.state.phrase}
           />
           <button
-            onClick={() => this.process(this.state.words!)}
+            onClick={() => this.process()}
           >
             Find
           </button>

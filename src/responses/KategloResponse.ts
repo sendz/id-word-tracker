@@ -49,8 +49,9 @@ export interface Kateglo {
 
 export interface KategloResponse {
   origin?: string;
+  warning?: string;
   prefix?: string;
   suffix?: string;
   infix?: string;
-  kateglo: Kateglo;
+  kateglo?: Kateglo;
 }

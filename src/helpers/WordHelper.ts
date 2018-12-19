@@ -28,7 +28,7 @@ class WordHelperClass {
       });
     }
     return {
-      prefix: word.match(PREFIX)![0],
+      prefix: word.match(PREFIX) ? word.match(PREFIX)![0] : '',
       word: result
     };
   }
@@ -47,11 +47,13 @@ class WordHelperClass {
   removeInfix = (word: string): Response => {
     const infixPosition: number = word.search(INFIX);
     let result: string = word;
-    if (infixPosition === 1) {
+    let infix: string = '';
+    if (INFIX.test(word) && infixPosition === 1) {
       result = word.slice(0, 1) + word.slice(3);
+      infix = word.slice(1, 3);
     }
     return {
-      infix: word.match(INFIX)![0],
+      infix,
       word: result
     };
   }
@@ -73,6 +75,7 @@ class WordHelperClass {
   }
 
   findInfix = (word: string): Response => {
+    console.log(word, word.match(INFIX));
     return {
       infix: word.match(INFIX)! ? word.match(INFIX)![0] : '',
       word: word
