@@ -1,0 +1,1 @@
+export const INFIX = /(el)|(er)|(em)|(in)/g;

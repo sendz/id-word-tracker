@@ -6,6 +6,7 @@ import { KategloClass } from './services/KategloService';
 import { inject, observer } from 'mobx-react';
 import { KategloResponse } from './responses/KategloResponse';
 import { WordTree } from './components/WordTree';
+import { WordHelper } from './helpers/WordHelper';
 
 interface Props {
   [INJECT_KEY.KATEGLO]?: KategloClass;
@@ -35,15 +36,13 @@ class App extends React.Component<Props, State> {
   fetchWord = (word: string) => {
     this.props[INJECT_KEY.KATEGLO]!.fetchWord(word)
       .then(response => {
-        this.state.responses!.push(response.data);
-        this.setState({ responses: this.state.responses!.reverse() });
+        if (response.data) {
+          const data = { ...response.data, origin: word };
+          this.state.responses!.push(data);
+          this.setState({ responses: this.state.responses!.reverse() });
+        }
       })
       .catch(error => alert(error));
-  }
-
-  splitPhrase = (phrase: string) => {
-    let words: string[] = phrase.split(' ');
-    this.setState({ words });
   }
 
   process = (words: string[]) => {
@@ -72,7 +71,7 @@ class App extends React.Component<Props, State> {
               this.setState({ phrase: event.target.value });
             }}
             onBlur={() => {
-              this.splitPhrase(this.state.phrase!);
+              this.setState({ words: WordHelper.splitPhrase(this.state.phrase!) });
             }}
             value={this.state.phrase}
           />
