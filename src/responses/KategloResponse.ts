@@ -13,6 +13,11 @@ export interface Definition {
   lex_class_ref: string;
 }
 
+export interface Root {
+  rel_type: string;
+  root_phrase: string;
+}
+
 export interface Kateglo {
   phrase: string;
   phrase_type: string;
@@ -36,7 +41,7 @@ export interface Kateglo {
   roget_name?: any;
   ref_source_name: string;
   lex_class_ref: string;
-  root: any[];
+  root: Root[];
   definition: Definition[];
   reference: any[];
   proverbs: any[];
@@ -44,5 +49,8 @@ export interface Kateglo {
 
 export interface KategloResponse {
   origin: string;
+  prefix?: string;
+  suffix?: string;
+  infix?: string;
   kateglo: Kateglo;
 }

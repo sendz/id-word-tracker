@@ -1,8 +1,9 @@
 export const PREFIX = /^(meng)|(me)|(per)|(ber)|(ter)|(di)|(ke)|(peng)|(se)/g;
-export const ALLOMORPH = /()/g;
-export const RULES = [
+export const ALLOMORPH = /^(ny)/g;
+export const ALLOMORPH_RULES = [
   {
-    hook: /(me)/g,
-    tails: /(ny)/
+    prefix: 'me',
+    match: 'ny',
+    replace: 's'
   }
 ];
