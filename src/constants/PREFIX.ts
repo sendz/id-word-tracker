@@ -5,5 +5,10 @@ export const ALLOMORPH_RULES = [
     prefix: 'me',
     match: 'ny',
     replace: 's'
+  },
+  {
+    prefix: 'me',
+    match: 'n',
+    replace: 't'
   }
 ];
